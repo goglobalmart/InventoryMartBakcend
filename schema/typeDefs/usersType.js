@@ -28,6 +28,11 @@ module.exports = gql`
       message: String
       data: User
     }
+    type getUsersPaginatorMessage {
+        users:[User]
+        paginator:Paginator
+        message: String
+    }
     type Paginator {
         slNo: Int
         prev: Int
@@ -40,11 +45,7 @@ module.exports = gql`
         hasNextPage: Boolean
         totalDocs:Int
     }
-    type getUsersPaginatorMessage {
-        users:[User]
-        paginator:Paginator
-        message: String
-    }
+  
     # Input Types 
     input createUserInput{
       user_name: String!
@@ -64,7 +65,7 @@ module.exports = gql`
     
     type Query {
       getUsersWithPagination(page: Int!,limit: Int!,keyword: String!): getUsersPaginatorMessage!
-      # getUserLoggedin(): getUserMessage!
+      getUserLoggedin: getUserMessage!
     }
     type Mutation {
      createUser(input: createUserInput!): userMessage!

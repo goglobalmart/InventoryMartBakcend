@@ -2,20 +2,21 @@ const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
 
 const location = new mongoose.Schema({
-    name:  {
+    name: {
         type: String,
         unique: true
     },
+    type: String,
     create_At: { type: Date, default: new Date().toISOString() },
     remark: String,
-    materials: [{
-        material: { type: mongoose.Schema.Types.ObjectId, ref: 'Material' },
-        date: Date,
-        expired_Date: Date,
-        qty: Number,
-        supplier: { type: mongoose.Schema.Types.ObjectId, ref: 'Supplier' }
-    }]
-  
+    // materials: [{
+    //     material: { type: mongoose.Schema.Types.ObjectId, ref: 'Material' },
+    //     date: Date,
+    //     expired_Date: Date,
+    //     qty: Number,
+    //     supplier: { type: mongoose.Schema.Types.ObjectId, ref: 'Supplier' }
+    // }]
+
 })
 
 location.plugin(uniqueValidator);

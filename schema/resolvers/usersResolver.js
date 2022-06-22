@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const { auth } = require("../../config/firebaseConfig");
 const mongoose = require('mongoose');
+const { authCheck } = require('../../helpers/auth');
 
 const userLabels = {
     docs: "users",
@@ -16,23 +17,30 @@ const userLabels = {
 
 module.exports = {
     Query: {
-        // getUserLoggedin: async (__, args) => {
-        //     try {
-        //         const user = await User.findById(args.user_Id).exec();
-        //         if (user)
-        //             return {
-        //                 message: "Get User Success!",
-        //                 status: true,
-        //                 data: user
-        //             }
-        //     } catch (error) {
-        //         return {
-        //             message: error.message,
-        //             status: false,
-        //             data: null
-        //         }
-        //     }
-        // },
+        getUserLoggedin: async (__, args, { req }) => {
+            const currentUser = await authCheck(req);
+            try {
+                const findUser = await User.findOne({ mail: currentUser.email }).exec()
+                if (findUser)
+                    return {
+                        message: "Get User Success!",
+                        status: true,
+                        data: findUser
+                    }
+                if (!findUser)
+                    return {
+                        message: "Cannot Find User!",
+                        status: false,
+                        data: null
+                    }
+            } catch (error) {
+                return {
+                    message: error.message,
+                    status: false,
+                    data: null
+                }
+            }
+        },
         getUsersWithPagination: async (__, args) => {
             const options = {
                 page: args.page || 1,
@@ -126,9 +134,16 @@ module.exports = {
                         .catch((error) => {
                             console.log('Error deleting user:', error);
                         });
-                return {
-                    message: "Delete User Success!",
-                    status: true
+                if (deleteUser) {
+                    return {
+                        message: "Delete User Success!",
+                        status: true
+                    }
+                } else {
+                    return {
+                        message: "Cannot Find User!",
+                        status: false
+                    }
                 }
             } catch (error) {
                 return {

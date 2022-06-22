@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
-
+const Paginate = require('mongoose-paginate-v2');
 const material = new mongoose.Schema({
     name: {
         type: String,
@@ -10,7 +10,11 @@ const material = new mongoose.Schema({
     category: String,
     image_src: String,
     remark: String,
+    type: String,
+    feature: String,
+    unit: String
 })
 material.plugin(uniqueValidator);
+material.plugin(Paginate);
 const model = mongoose.model('Material', material);
 module.exports = model;

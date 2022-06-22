@@ -7,29 +7,44 @@ module.exports = gql`
         name: String
         create_At: DataTime
         remark: String
-        materials: [MaterialDetail]
+        type: String
+        # materials: [MaterialDetail]
     }
     # Input Type 
     input createLocationInput {
         name: String
         remark: String
+        type: String
+    }
+    input updateLocationInput {
+        location_Id: String
+        name: String
+        remark: String
+        type: String
     }
     # Responding Message 
     type locationMessage {
         status: Boolean
         message: String
     }
-    type MaterialDetail {
-        material: Material
-        date: DataTime
-        expired_Date:  DataTime
-        qty: Float
-        supplier: Supplier
+    type getLocationMessage {
+        status: Boolean
+        message: String
+        data: Location
+    }
+    type getLocationsMessage {
+        status: Boolean
+        message: String
+        data: [Location]
+    }
+    type Query {
+        getLocationbyId(location_Id: String!): getLocationMessage! 
+        getLocations(keyword: String!, type: String!): getLocationsMessage!
+        # getTotalLocation
     }
     type Mutation {
         createLocation(input: createLocationInput!): locationMessage!
-        # updateLocation
-        # deleteLocation if materails.legngth == 0 can delete
-        # createPurches
+        updateLocation(input: updateLocationInput!): locationMessage!
+        deleteLocation(location_Id: String!): locationMessage!
     }
 `

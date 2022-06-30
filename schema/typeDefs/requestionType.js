@@ -8,7 +8,8 @@ module.exports = gql`
         no: String
         need_Date: DataTime
         reqeustion_By: User
-        update_By: User
+        approve_By: User
+        receive_By: User
         for_Location: Location
         priority: String
         status: String
@@ -65,7 +66,7 @@ module.exports = gql`
         createRequestion(input: createRequestionInput): requestionMessage!
         deleteRequestion(requestion_Id: String!): requestionMessage! 
         updateRequestion(input: updateRequestionInput!): requestionMessage! 
-        updateRequestionStatus(status: String!, requestion_Id: String!): requestionMessage!
+        approveRequestion(status: String!, requestion_Id: String!): requestionMessage!
         receiveMaterial(requestion_Id: String!): requestionMessage!
     }
 `

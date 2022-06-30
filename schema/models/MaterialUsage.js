@@ -9,6 +9,7 @@ const materialUsage = new mongoose.Schema({
     request: { type: mongoose.Schema.Types.ObjectId, ref: 'Requestion' },
     expired_Date: Date,
     qty: Number,
+    unit_Price: Number,
     supplier: { type: mongoose.Schema.Types.ObjectId, ref: 'Supplier' },
     supplier_Name: String,
     in_Location: { type: mongoose.Schema.Types.ObjectId, ref: 'Location' },

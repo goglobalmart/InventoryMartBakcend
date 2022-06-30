@@ -1,6 +1,6 @@
 const Requestion = require('../models/Requestion');
 const { Requestion_Number_Generator } = require('../../util/fn');
-// const { authCheck } = require('../../helpers/auth');
+const { authCheck } = require('../../helpers/auth');
 // const User = require('../models/User');
 // const Location = require('../models/Location');
 const MaterialUsage = require('../models/MaterialUsage');
@@ -16,6 +16,7 @@ const requestionLabels = {
     totalDocs: "totalDocs",
     totalPages: "totalPages",
 };
+
 module.exports = {
     Query: {
         // getRequestionbyId: async (__, args) => {
@@ -65,14 +66,13 @@ module.exports = {
         createRequestion: async (__, args) => {
             let newArray = [];
             try {
-
                 const getlength = await Requestion.find().exec();
                 const number = await Requestion_Number_Generator(getlength.length);
                 const requestion = await new Requestion({
                     ...args.input,
                     no: number
                 }).save();
-                console.log(requestion)
+                // console.log(requestion)
                 if (requestion)
                     args.input.materials.forEach(element => {
                         const finalResult = Object.assign(element, { request: requestion._id });
@@ -128,15 +128,32 @@ module.exports = {
         },
         updateRequestion: async (__, args) => {
             // console.log(args.input)
+            let newArray = [];
             try {
                 const findRequestion = await Requestion.findById(args.input._id).exec();
-                if (findRequestion.status != "រងចាំ")
-                    return {
-                        message: `សំណើរនេះត្រូវបាន ៖ ${findRequestion.status} មិនអាចកែប្រែបាន!`,
-                        status: false
-                    }
-
+                // if (findRequestion.status != "រងចាំ" || findRequestion.status != "អនុញ្ញាត")
+                //     return {
+                //         message: `សំណើរនេះត្រូវបាន៖ ${findRequestion.status} មិនអាចកែប្រែបាន!`,
+                //         status: false
+                //     }
                 await Requestion.findByIdAndUpdate(args.input._id, args.input).exec();
+
+                // delete Old manterail 
+                await MaterialUsage.deleteMany({
+                    request: args.input._id
+                }).then(function () {
+                    console.log("Data deleted"); // Su ccess
+                }).catch(function (error) {
+                    console.log(error); // Failure
+                });
+
+                // add new material 
+                args.input.materials.forEach(element => {
+                    const finalResult = Object.assign(element, { request: args.input._id });
+                    newArray.push(finalResult);
+                });
+                await MaterialUsage.insertMany(newArray)
+
                 return {
                     message: `សំណើរនេះត្រូវបានកែប្រែ!`,
                     status: true
@@ -148,13 +165,14 @@ module.exports = {
                 }
             }
         },
-        updateRequestionStatus: async (__, args, { req }) => {
+        approveRequestion: async (__, args, { req }) => {
+            const currentUser = await authCheck(req)
             try {
-                const getRequestion = await Requestion.findByIdAndUpdate(args.requestion_Id, { status: args.status });
-                if (getRequestio)
+                const getRequestion = await Requestion.findByIdAndUpdate(args.requestion_Id, { status: args.status, approve_By: currentUser.uid });
+                if (getRequestion)
                     return {
                         message: `សំណើរត្រូវបាន៖ ${args.status}`,
-                        status: false
+                        status: true
                     }
             } catch (error) {
                 return {
@@ -163,7 +181,7 @@ module.exports = {
                 }
             }
         },
-        receiveMaterial: async (__, args) => {
+        receiveMaterial: async (__, args, { req }) => {
             try {
                 const reqeustion = await Requestion.findById(args.requestion_Id).exec();
 
@@ -204,7 +222,6 @@ module.exports = {
                         message: "​សម្ភារៈត្រូវបានដាក់ចូលក្នុងឃ្លាំង",
                         status: true
                     }
-
             } catch (error) {
                 return {
                     message: error.message,

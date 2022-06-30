@@ -19,6 +19,7 @@ module.exports = gql`
         material: Material
         expired_Date:  DataTime
         qty: Float
+        unit_Price: Float
         supplier: Supplier
         supplier_Name: String
         in_Location: Location 
@@ -47,17 +48,20 @@ module.exports = gql`
         type: String
         feature: String
         unit: String
+        unit_Price: Float
+        expired_Date:  DataTime
     }
     input inputMaterialDetail {
         material_Name: String
         material: String
-        # expired_Date:  DataTime
+        expired_Date:  DataTime
         qty: Float
         supplier: String
         supplier_Name: String
         in_Location: String 
         location_Name: String
         key: DataTime
+        unit_Price: Float
     }
     # Responding Message 
     type materialMessage {

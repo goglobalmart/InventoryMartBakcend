@@ -104,7 +104,7 @@ module.exports = {
                     },
 
                     {
-                        '$match': { $and: [queryType, queryCategory, queryInLocation] }
+                        '$match': { $and: [queryType, queryCategory, queryInLocation,{status:"នៅក្នុងឃ្លាំង"} ] }
                     }
                 ]
             )

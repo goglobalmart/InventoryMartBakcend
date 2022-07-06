@@ -17,7 +17,6 @@ const materialLabels = {
 };
 module.exports = {
     Query: {
-
         getMaterialwithPagination: async (__, args) => {
             // page: Int!,limit: Int!,keyword: String!, type: String!, category: String!
             const options = {

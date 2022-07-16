@@ -6,7 +6,7 @@ const supplier = new mongoose.Schema({
     phone_Number: String,
     email: String,
     location: String,
-    create_At: { type: Date, default: new Date().toISOString() }
+    created_At: { type: Date, default: new Date().toISOString() }
 })
 
 supplier.plugin(Paginate);

@@ -19,3 +19,21 @@ exports.CountQty = {
         return Qty
     }
 }
+
+exports.CheckQty = {
+    Qtyms: "",
+    add(inputQty, qty, stock, material) {
+        // if (inputQty > qty)
+      this.Qtyms = `${stock}មិនមាន ${material} គ្រប់។ ចំនួនមានតែ${qty}`
+    //   console.log(this.Qtyms)
+      return  "ds"
+        // console.log(inputQty, qty)
+        // console.log(Qtyms)
+    },
+    get getCheckQtyMesssage() {
+        console.log(this.Qtyms)
+        return this.Qtyms
+    }
+}
+
+// exports.checkQtyMessage = 

@@ -8,7 +8,7 @@ module.exports = gql`
         phone_Number: String
         email: String
         location: String
-        create_At: DataTime
+        created_At: DataTime
     }
      # Input Type 
     input createSupplierInput {

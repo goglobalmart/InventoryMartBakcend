@@ -45,6 +45,17 @@ module.exports = {
                     data: null
                 }
             }
+        },
+        getTotalLocation: async (__, args) => {
+            const locationLegth = await Location.find({ type: args.type }).exec();
+            const getStringLeng = locationLegth.length.toString();
+
+            if (getStringLeng.length === 1) {
+                return "0" + getStringLeng
+            } else {
+                return getStringLeng
+            }
+
         }
     },
     Mutation: {

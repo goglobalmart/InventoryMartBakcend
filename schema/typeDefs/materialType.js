@@ -12,6 +12,7 @@ module.exports = gql`
         type: String
         feature: String
         unit: String
+        created_At: DataTime
     }
     type MaterialDetail {
         status: String
@@ -110,11 +111,13 @@ module.exports = gql`
         getMaterialwithPagination(page: Int!,limit: Int!,keyword: String!, type: String!, category: String!): getMaterialPaginatorMessage!
         getMaterialUsagewithPagination(page: Int!,limit: Int!,keyword: String!,location: String type: String!, category: String!): getMaterialUsagePaginatorMessage!
         getMaterialUsagebyRequestion(requestion_Id: String!): getMaterialsUsageMessage!
+        getLessMaterialUsagebyLocation(location_Id: String!): getMaterialsUsageMessage!
     }
     #Mutation
     type Mutation {
-        createMaterial(input: createMaterialInput!): materialMessage!
+        createMaterial(input: createMaterialInput): materialMessage!
         updateMaterial(input: updateMaterialInput!): materialMessage!
         deleteMaterial(material_Id: String!): materialMessage!
+        moveMaterialLocation(material_Id: String!,in_Location_Id: String!, moving_Location_Id: String!, qty: Float!):materialMessage!
     }
 `

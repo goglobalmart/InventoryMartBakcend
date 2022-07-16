@@ -13,6 +13,7 @@ const requestion = new mongoose.Schema({
     status: { type: String, default: "រងចាំ" },
     // materials: [{ type: mongoose.Schema.Types.ObjectId, ref: 'MaterialUsage' }],
     remark: String,
+    created_At: { type: Date, default: new Date().toISOString() }
 })
 requestion.plugin(Paginate);
 const model = mongoose.model("Requestion", requestion);

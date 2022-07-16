@@ -5,9 +5,10 @@ module.exports = gql`
     type Location {
         _id: ID
         name: String
-        create_At: DataTime
+        created_At: DataTime
         remark: String
         type: String
+        
         # materials: [MaterialDetail]
     }
     # Input Type 
@@ -40,7 +41,7 @@ module.exports = gql`
     type Query {
         getLocationbyId(location_Id: String!): getLocationMessage! 
         getLocations(keyword: String!, type: String!): getLocationsMessage!
-        # getTotalLocation
+        getTotalLocation(type: String): String!
     }
     type Mutation {
         createLocation(input: createLocationInput!): locationMessage!

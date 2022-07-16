@@ -1,5 +1,5 @@
 const Material = require('../models/Material');
-const Requestion = require('../models/Requestion');
+// const Requestion = require('../models/Requestion');
 const MaterialUsage = require('../models/MaterialUsage');
 const Supplier = require('../models/Supplier');
 const Location = require('../models/Location');
@@ -103,7 +103,7 @@ module.exports = {
                     },
 
                     {
-                        '$match': { $and: [queryType, queryCategory, queryInLocation,{status:"នៅក្នុងឃ្លាំង"} ] }
+                        '$match': { $and: [queryType, queryCategory, queryInLocation, { status: 'បានទទួល', "qty": { $gte: 1 } }] }
                     }
                 ]
             )
@@ -134,6 +134,28 @@ module.exports = {
                         status: false,
                         data: null
                     }
+                }
+            } catch (error) {
+                return {
+                    message: error.message,
+                    status: false,
+                    data: null
+                }
+            }
+        },
+        getLessMaterialUsagebyLocation: async (__, args) => {
+            try {
+                const getLessMaterials = await MaterialUsage.find(
+                    {
+                        in_Location: mongoose.Types.ObjectId(args.location_Id),
+                        status: "បានទទួល"
+                    }
+                ).sort({ qty: 1 }).limit(4).populate("material in_Location").exec();
+
+                return {
+                    message: "Get Material Success!",
+                    data: getLessMaterials,
+                    status: true
                 }
             } catch (error) {
                 return {
@@ -222,6 +244,63 @@ module.exports = {
                         status: false
                     }
                 }
+            } catch (error) {
+                return {
+                    message: error.message,
+                    status: false
+                }
+            }
+        },
+        moveMaterialLocation: async (__, args) => {
+            // (material_Id: String!, in_Location_Id: String!, moving_Location_Id: String!, qty: Float!)
+            try {
+                const getCurrentMaterialQty = await MaterialUsage.findById(args.material_Id).exec();
+                if (!getCurrentMaterialQty)
+                    return {
+                        message: "រកសម្ភារៈដែលត្រូវប្ដូរទីតាំងមិនឃើញ",
+                        status: false
+                    }
+                const currentQty = getCurrentMaterialQty.qty;
+
+                if (args.qty > currentQty) {
+                    return {
+                        message: `សម្ភារៈមិនមានគ្រប់ចំនួន!`,
+                        status: false
+                    }
+                } else {
+
+                    // update new Stock 
+                    // fine materil in new stock 
+                    const getMaterailInStock = await MaterialUsage.findOne(
+                        {
+                            material: mongoose.Types.ObjectId(getCurrentMaterialQty.material),
+                            in_Location: mongoose.Types.ObjectId(args.moving_Location_Id),
+                            status: "បានទទួល"
+                        }
+                    ).exec();
+
+                    // await MaterialUsage.findOneAndUpdate(
+                    //     {
+                    //         in_Location: mongoose.Types.ObjectId(args.moving_Location_Id),
+
+                    //     }
+                    // ).exec()
+
+                    // cut stock 
+                    // await MaterialUsage.findByIdAndUpdate(
+                    //     args.material_Id,
+                    //     {
+                    //         qty: currentQty - args.qty
+                    //     }
+                    // ).exec();
+
+                    // return {
+                    //     message: "ប្តូរទិតាំងជោគជ័យ!",
+                    //     status: false
+                    // }
+                }
+
+
             } catch (error) {
                 return {
                     message: error.message,

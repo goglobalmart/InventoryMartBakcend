@@ -4,6 +4,7 @@ const { authCheck } = require('../../helpers/auth');
 // const User = require('../models/User');
 // const Location = require('../models/Location');
 const MaterialUsage = require('../models/MaterialUsage');
+const { default: mongoose } = require('mongoose');
 
 const requestionLabels = {
     docs: "requestions",
@@ -43,9 +44,9 @@ module.exports = {
                 limit: args.limit || 10,
                 customLabels: requestionLabels,
                 sort: {
-                    createdAt: -1,
+                    created_At: -1,
                 },
-                populate: "reqeustion_By for_Location",
+                populate: "reqeustion_By for_Location approve_By",
             }
             // console.log(args.status)
             const query = {
@@ -58,7 +59,7 @@ module.exports = {
             }
 
             const requestions = await Requestion.paginate(query, options);
-
+            // console.log(requestions)
             return requestions;
         }
     },
@@ -68,21 +69,40 @@ module.exports = {
             try {
                 const getlength = await Requestion.find().exec();
                 const number = await Requestion_Number_Generator(getlength.length);
+                // console.log(args.input)
+
                 const requestion = await new Requestion({
                     ...args.input,
                     no: number
                 }).save();
-                // console.log(requestion)
-                if (requestion)
+                console.log(requestion && args.input.type === `ទិញទំនិញ`)
+                if (requestion && args.input.type === `ទិញទំនិញ`) {
                     args.input.materials.forEach(element => {
                         const finalResult = Object.assign(element, { request: requestion._id });
                         newArray.push(finalResult);
                     });
-                await MaterialUsage.insertMany(newArray)
-                return {
-                    message: "Requestion Created!",
-                    status: true
+                    console.log(newArray)
+                    await MaterialUsage.insertMany(newArray)
+                    return {
+                        message: `បង្កើតសំណើរ${args.input.type} ជោគជ័យ!`,
+                        status: true
+                    }
+                } else {
+                    args.input.materials.forEach(element => {
+                        const finalResult = Object.assign(element, { request: requestion._id });
+                        newArray.push(finalResult);
+                    });
+                    await MaterialUsage.insertMany({
+                        ...newArray,
+                        supplier: new mongoose.Types.ObjectId()
+                    })
+                    // console.log(newArray)
+                    return {
+                        message: `បង្កើតសំណើរ${args.input.type} ជោគជ័យ!`,
+                        status: true
+                    }
                 }
+
             } catch (error) {
                 return {
                     message: error.message,
@@ -193,10 +213,10 @@ module.exports = {
 
                 const materials = await MaterialUsage.find({ request: reqeustion._id.toString() }).populate('material').populate('in_Location').exec();
                 materials.forEach(async material => {
-                    const locationType = material.in_Location.type;
+                    const locationType = material?.in_Location?.type;
                     const feature = material.material.feature;
                     const materialId = material.material._id.toString();
-                    const materialInstock = await MaterialUsage.findOne({ material: materialId, status: "នៅក្នុងឃ្លាំង" }).exec();
+                    const materialInstock = await MaterialUsage.findOne({ material: materialId, status: "បានទទួល" }).exec();
                     const QtyOldStock = materialInstock?.qty;
                     const QtyNew = material.qty;
 
@@ -205,18 +225,18 @@ module.exports = {
                         await MaterialUsage.findOneAndUpdate({ material: materialId }, { qty: QtyOldStock + QtyNew }).exec();
 
                     } else if (locationType === "ការិយាល័យ" && feature === "រយៈពេលវែង" && !materialInstock) {
-                        await MaterialUsage.findOneAndUpdate({ material: materialId }, { status: "នៅក្នុងឃ្លាំង" }).exec();
+                        await MaterialUsage.findOneAndUpdate({ material: materialId }, { status: "បានទទួល" }).exec();
                     } else if (locationType === "ទំនិញ" && materialInstock) {
                         await MaterialUsage.findOneAndUpdate({ material: materialId }, { qty: QtyOldStock + QtyNew }).exec();
                     } else if (locationType === "ទំនិញ" && !materialInstock) {
-                        await MaterialUsage.findOneAndUpdate({ material: materialId }, { status: "នៅក្នុងឃ្លាំង" }).exec();
+                        await MaterialUsage.findOneAndUpdate({ material: materialId }, { status: "បានទទួល" }).exec();
                     } else {
                         console.log("No Material update")
                     }
                     // ការិយាល័យ
                     // console.log(locationType)
                 })
-                const updateRewuestion = await Requestion.findByIdAndUpdate(args.requestion_Id, { status: "នៅក្នុងឃ្លាំង" }).exec();
+                const updateRewuestion = await Requestion.findByIdAndUpdate(args.requestion_Id, { status: "បានទទួល", }).exec();
                 if (updateRewuestion)
                     return {
                         message: "​សម្ភារៈត្រូវបានដាក់ចូលក្នុងឃ្លាំង",

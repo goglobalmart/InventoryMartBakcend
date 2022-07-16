@@ -16,7 +16,7 @@ const user = new mongoose.Schema({
     position: { type: String },
     image_name: { type: String },
     image_src: { type: String },
-    create_At: { type: Date, default: new Date().toISOString() },
+    created_At: { type: Date, default: new Date().toISOString() },
     update_At: { type: Date, default: new Date().toISOString() },
     status: { type: Boolean, default: false },
 }, { _id: false });

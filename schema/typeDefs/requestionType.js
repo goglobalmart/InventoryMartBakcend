@@ -15,6 +15,7 @@ module.exports = gql`
         status: String
         materials: [MaterialDetail]
         remark: String
+        created_At: DataTime
     }
     # Responding Message 
     type requestionMessage {

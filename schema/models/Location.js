@@ -7,8 +7,9 @@ const location = new mongoose.Schema({
         unique: true
     },
     type: String,
-    create_At: { type: Date, default: new Date().toISOString() },
+    created_At: { type: Date, default: new Date().toISOString() },
     remark: String,
+    
     // materials: [{
     //     material: { type: mongoose.Schema.Types.ObjectId, ref: 'Material' },
     //     date: Date,

@@ -9,7 +9,7 @@ module.exports = gql`
       position: String
       image_name: String
       image_src: String
-      create_At: DataTime  
+      created_At: DataTime 
       update_At: DataTime 
       status: Boolean
     }

@@ -12,7 +12,8 @@ const material = new mongoose.Schema({
     remark: String,
     type: String,
     feature: String,
-    unit: String
+    unit: String,
+    created_At: { type: Date, default: new Date().toISOString() }
 })
 material.plugin(uniqueValidator);
 material.plugin(Paginate);
